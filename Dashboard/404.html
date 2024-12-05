@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Page Not Found</title>
+    <style>
+        body {
+            background: #FCE4EC; /* Soft pink background to indicate an error */
+            color: #212121; /* Dark text for better readability */
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        #message {
+            background: white;
+            max-width: 450px;
+            margin: 100px auto;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15); /* Subtle shadow for depth */
+        }
+        #message h2 {
+            color: #E53935; /* Bright red for error emphasis */
+            font-size: 50px;
+            margin-bottom: 20px;
+        }
+        #message h1 {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 16px;
+        }
+        #message p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        #message a {
+            display: inline-block;
+            text-decoration: none;
+            background-color: #3949AB; /* Deep purple for call-to-action buttons */
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        #message a:hover {
+            background-color: #283593; /* Darker purple on hover */
+        }
+        .link-group {
+            margin-top: 20px;
+        }
+        .link-group a {
+            display: block;
+            margin-top: 10px;
+            color: #039BE5; /* Light blue for secondary links */
+            text-decoration: none;
+        }
+        .link-group a:hover {
+            text-decoration: underline;
+        }
+        @media (max-width: 600px) {
+            #message {
+                margin: 50px auto;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="message">
+        <h2>404</h2>
+        <h1>Oops! Page Not Found</h1>
+        <p>The page you are looking for doesn't exist. It might have been moved, or the link is broken.</p>
+        <a href="/">Back to Home</a>
+        <div class="link-group">
+            <a href="/dashboard">Go to Dashboard</a>
+            <a href="/monitoring">Monitoring Page</a>
+            <a href="/about">About the Project</a>
+        </div>
+    </div>
+</body>
+</html>

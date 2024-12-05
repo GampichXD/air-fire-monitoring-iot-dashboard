@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>BLAZE Dashboard</title>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-database.js"></script>
+
+    <!-- Highcharts for Charts -->
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css">
+
+    <style>
+        html, body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            text-align: center;
+        }
+        .topnav {
+            background-color: #800000;
+            color: white;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .topnav h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+        .content {
+            padding: 20px;
+        }
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        .card i {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        .card p:first-child {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .card p:last-child {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #333;
+        }
+        .chart-container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="topnav">
+        <h1>BLAZE Dashboard <i class="fas fa-tachometer-alt"></i></h1>
+    </div>
+
+    <div class="content">
+        <div class="cards">
+            <div class="card">
+                <i class="fas fa-thermometer-half" style="color: #e74c3c;"></i>
+                <p>TEMPERATURE</p>
+                <p id="temp">-- °C</p>
+            </div>
+            <div class="card">
+                <i class="fas fa-tint" style="color: #3498db;"></i>
+                <p>HUMIDITY</p>
+                <p id="hum">-- %</p>
+            </div>
+            <div class="card">
+                <i class="fas fa-cloud" style="color: #f1c40f;"></i>
+                <p>AIR QUALITY</p>
+                <p id="air">--    ppm</p>
+            </div>
+            <div class="card">
+                <i class="fas fa-fire" style="color: #e67e22;"></i>
+                <p>FIRE DETECTION</p>
+                <p id="fire">--</p>
+            </div>
+            <div class="card">
+                <i class="fas fa-bell" style="color: #e74c3c;"></i>
+                <p>ALERTS</p>
+                <p id="alert-msg">No Alerts</p>
+            </div>
+            <div class="card">
+                <i class="fas fa-lightbulb" style="color: #f1c40f;"></i>
+                <p>LED STATUS</p>
+                <p id="led-status">--</p>
+            </div>
+            <div class="card">
+                <i class="fas fa-bullhorn" style="color: #e74c3c;"></i>
+                <p>BUZZER STATUS</p>
+                <p id="buzzer-status">--</p>
+            </div>
+            <div class="card">
+                <i class="fas fa-cogs" style="color: #2ecc71;"></i>
+                <p>MOTOR STATUS</p>
+                <p id="motor-status">--</p>
+            </div>
+        </div>
+
+        <div class="charts">
+            <div class="chart-container">
+                <h3>Temperature Chart</h3>
+                <div id="chart-temperature"></div>
+            </div>
+            <div class="chart-container">
+                <h3>Humidity Chart</h3>
+                <div id="chart-humidity"></div>
+            </div>
+            <div class="chart-container">
+                <h3>Air Quality Chart</h3>
+                <div id="chart-air-quality"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyB_JPDOOH0aIOvW34q2vU02o7BY31MDqhM",
+            authDomain: "dsm2024-e8b0c.firebaseapp.com",
+            databaseURL: "https://dsm2024-e8b0c-default-rtdb.firebaseio.com",
+            projectId: "dsm2024-e8b0c",
+            storageBucket: "dsm2024-e8b0c.firebasestorage.app",
+            messagingSenderId: "861760770446",
+            appId: "1:861760770446:web:3cb4e0559154dcf76014df",
+            measurementId: "G-BSTQ22WJMV"
+        };
+        firebase.initializeApp(firebaseConfig);
+
+        const db = firebase.database();
+        const tempRef = db.ref('/Suhu');
+        const humRef = db.ref('/Kelembapan');
+        const airRef = db.ref('/Gas');
+        const fireRef = db.ref('/Api');
+        const alertRef = db.ref('/Pesan');
+        const ledRef = db.ref('/LED');
+        const buzzerRef = db.ref('/Buzzer');
+        const motorRef = db.ref('/Motor');
+
+        tempRef.on('value', snapshot => {
+            const temp = snapshot.val();
+            document.getElementById('temp').innerText = temp ? temp.toFixed(2) : "--";
+        });
+
+        humRef.on('value', snapshot => {
+            const hum = snapshot.val();
+            document.getElementById('hum').innerText = hum ? hum.toFixed(2) : "--";
+        });
+
+        airRef.on('value', snapshot => {
+            const air = snapshot.val();
+            document.getElementById('air').innerText = air ? air.toFixed(2) : "--";
+        });
+
+        fireRef.on('value', snapshot => {
+            const fire = snapshot.val();
+            document.getElementById('fire').innerText = fire ? "YES" : "NO";
+        });
+
+        alertRef.on('value', snapshot => {
+            const alert = snapshot.val();
+            document.getElementById('alert-msg').innerText = alert || "No Alerts";
+        });
+
+        ledRef.on('value', snapshot => {
+            document.getElementById('led-status').innerText = snapshot.val() ? "ON" : "OFF";
+        });
+
+        buzzerRef.on('value', snapshot => {
+            document.getElementById('buzzer-status').innerText = snapshot.val() ? "ON" : "OFF";
+        });
+
+        motorRef.on('value', snapshot => {
+            document.getElementById('motor-status').innerText = snapshot.val() ? "ON" : "OFF";
+        });
+    </script>
+    <script src="scripts/charts-definition.js"></script>
+    <script src="scripts/index.js"></script>
+    </script>
+</body>
+</html>
